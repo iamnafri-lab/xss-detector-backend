@@ -7,13 +7,14 @@ import { execute, subscribe } from "graphql";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { xss_detector } from "./graphQL-server/resolvers/xss-detector";
+import cors from "cors";
 
 const typeDef = gql`
   scalar Date
   scalar DateTime
   type Query
   # type Mutation
-  # type Subscription
+  type Subscription
   type SuccessResponse {
     success: Boolean
   }
@@ -38,7 +39,7 @@ const { ApolloServer } = require("apollo-server-express");
 async function startApolloServer() {
   const app = express();
   const httpServer = createServer(app);
-  //app.use('*', cors({ origin: `http://localhost:4000` }));
+  // app.use('*', cors({ origin: `http://localhost:4000` }));
 
   const schema = makeExecutableSchema({
     typeDefs,
@@ -49,6 +50,9 @@ async function startApolloServer() {
   const server = new ApolloServer({
     resolvers,
     typeDefs,
+    cors:{
+      origin:true
+    },
     context: ({ req }: { req: any }) => {
       let { authorization } = req.headers;
       let token = authorization || null;
@@ -88,7 +92,7 @@ async function startApolloServer() {
     },
     {
       server: httpServer,
-      path: `${server.graphqlPath}ws`,
+      path: `${server.graphqlPath}`,
     }
   );
 
@@ -97,7 +101,7 @@ async function startApolloServer() {
   server.applyMiddleware({ app });
 
   //server.installSubscriptionHandlers(httpServer);
-  //app.use(cors());
+  app.use(cors());
   const PORT = 4000;
   httpServer.listen(PORT, () => {
     console.log(`Server is now running on http://localhost:${PORT}/graphql`);
