@@ -145,47 +145,27 @@ def predict(w, i):
 
 
 
-local_ip = ni.ifaddresses(provided_interface)[ni.AF_INET][0]['addr'] #en0 interface for wifi card on Mac. 
-capture = py.LiveCapture(
-    interface=provided_interface,
-    bpf_filter=port
-)
 
-capture.sniff(timeout=2, packet_count=2)
-# print('{ "src" : "%s" , "payload" : %s, "attack" : true }'%("src", '"payload"'))
-if len(capture) > 0:
-    for packet in capture:
-        if str(packet.ip.dst) == str(local_ip):
-            try:
-                if packet.tcp.payload : 
-                    payload = str(packet.tcp.payload).replace(":","")
-                    bytes_object = bytes.fromhex(payload)
-                    payload_string = bytes_object.decode("ASCII")
-                    payload_string = payload_string.replace("\n","").replace("\r","").replace("''"," ")
-                    payload_string = payload_string[payload_string.find("q=0.9")+5: ]
-                    payload = payload_string
-                    src = packet.ip.src
-                    line = payload
-                    x=GeneSeg(line)
-                    pre_file = pre(x)
-                    create_file(pre_file)
-                    Yes=0
-                    No=0
-                    for i in range(2):
-                        result = predict(pre_file,i)
-                        yes=0
-                        no=0
-                        for x in range(len(result)):
-                            yes += result[x][0]
-                            no += result[x][1]
-                        No+=no/len(result)
-                        Yes+=yes/len(result)
-                    Yes = Yes/2
-                    No = No/2
-                    if Yes>No:
-                        print('{ "src" : "%s" , "payload" : %s, "attack" : true }'%(src, payload))
-                    else:
-                        print('{ "src" : "%s" , "payload" : %s, "attack" : false }'%(src, payload))
-            except:
-                pass
-    exit(12)
+line = input("Enter something : ")
+payload = line
+src = "12.2312312.123"
+x=GeneSeg(line)
+pre_file = pre(x)
+create_file(pre_file)
+Yes=0
+No=0
+for i in range(2):
+    result = predict(pre_file,i)
+    yes=0
+    no=0
+    for x in range(len(result)):
+        yes += result[x][0]
+        no += result[x][1]
+    No+=no/len(result)
+    Yes+=yes/len(result)
+Yes = Yes/2
+No = No/2
+if Yes>No:
+    print('{ "src" : "%s" , "payload" : %s, "attack" : true }'%(src, payload))
+else:
+    print('{ "src" : "%s" , "payload" : %s, "attack" : false }'%(src, payload))

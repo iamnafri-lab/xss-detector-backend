@@ -10,6 +10,7 @@ export function start2(port: number , _interface : string){
         let dataToSend = data.toString();
         let obj : any;
         try{
+            console.log(dataToSend);
             obj = JSON.parse(dataToSend);
             obj.payload = JSON.stringify(obj.payload);
             pubsub.publish("results", {startDetection : obj})
