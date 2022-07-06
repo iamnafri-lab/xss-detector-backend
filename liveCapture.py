@@ -167,10 +167,6 @@ while 1:
                         line = payload
                         x=GeneSeg(line)
                         pre_file = pre(x)
-                        if "document.cookie" in line or "alert" in line:
-                            print('{ "src" : "%s" , "payload" : %s, "attack" : true }'%(src, payload))
-                            sys.stdout.flush()
-                            continue
                         create_file(pre_file)
                         Yes=0
                         No=0
